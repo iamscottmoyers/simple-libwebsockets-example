@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<title>Websocket example</title>
+<script>
+  var socket = new WebSocket( "ws://" + document.domain + ':' + location.port, "example-protocol" );
+  function update(msg) { document.getElementById("num").innerHTML = msg; }
+  socket.onopen = function() { console.log("socket open"); update("open"); }
+  socket.onclose = function() { console.log("socket close"); update("closed"); }
+  socket.onmessage = function(msg) { console.log("socket message: " + msg.data); update(msg.data); }
+</script>
+<body>
+<p id="num"></p>
+</body>
+</html>
