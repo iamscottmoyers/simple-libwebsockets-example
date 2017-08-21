@@ -96,7 +96,7 @@ int main( int argc, char *argv[] )
 			old = tv.tv_sec;
 		}
 
-		lws_service( context, 250 );
+		lws_service( context, /* timeout_ms = */ 250 );
 	}
 
 	lws_context_destroy( context );

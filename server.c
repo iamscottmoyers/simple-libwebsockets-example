@@ -83,7 +83,7 @@ int main( int argc, char *argv[] )
 
 	while( 1 )
 	{
-		lws_service( context, 1000000 );
+		lws_service( context, /* timeout_ms = */ 1000000 );
 	}
 
 	lws_context_destroy( context );
