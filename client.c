@@ -78,15 +78,15 @@ int main( int argc, char *argv[] )
 		/* Connect if we are not connected to the server. */
 		if( !web_socket && tv.tv_sec != old )
 		{
-			web_socket = lws_client_connect( /* context = */ context,
-			                                 /* address = */ "localhost",
-			                                 /* port = */ 8000,
-			                                 /* ssl_connection = */ 0,
-			                                 /* path = */ "/",
-			                                 /* host = */ lws_canonical_hostname( context ),
-			                                 /* origin = */ "origin",
-			                                 /* protocol = */ protocols[PROTOCOL_EXAMPLE].name,
-			                                 /* ietf_version_or_minus_one = */ -1 );
+			struct lws_client_connect_info ccinfo = {0};
+			ccinfo.context = context;
+			ccinfo.address = "localhost";
+			ccinfo.port = 8000;
+			ccinfo.path = "/";
+			ccinfo.host = lws_canonical_hostname( context );
+			ccinfo.origin = "origin";
+			ccinfo.protocol = protocols[PROTOCOL_EXAMPLE].name;
+			web_socket = lws_client_connect_via_info(&ccinfo);
 		}
 
 		if( tv.tv_sec != old )
