@@ -9,10 +9,49 @@ complicated.
 I wanted to be able to serve a simple html file and also have a C client send some data
 to the server so created this.
 
-## Build
-```bash
-make
+<details>
+  <summary>
+      1) Building in Linux (click to expand)
+  </summary>
+    
+1. Install libwebsockets in the conventional way
+3. In root folder, create an build folder
 ```
+$ mkdir build; cd build
+```
+4. Prepare the development and build
+```
+$ cmake ..
+$ make
+```
+</details>
+
+<details>
+  <summary>
+      2) Building in Windows (click to expand)
+  </summary>
+
+1. Install OpenSSL, cmake and Visual Studio
+
+2. Clone this repository and init submodule repository
+```
+git submodule init
+git submoudle update
+```
+
+3. In root folder, create an build folder
+```
+md build; cd build
+``` 
+
+4. Prepare the development and build
+```
+cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
+nmake
+
+```
+</details>
+
 
 ## Run
 In one terminal run:
