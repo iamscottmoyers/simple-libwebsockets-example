@@ -44,7 +44,7 @@ git submoudle update
 md build; cd build
 ``` 
 
-4. Prepare the development and build
+4. Execute these following commands in "Developer Command Prompt for Visual Studio" inside build folder
 ```
 cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
 nmake
