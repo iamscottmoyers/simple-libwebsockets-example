@@ -1,0 +1,6 @@
+[submodule "libwebsockets"]
+	path = libwebsockets
+	url = https://github.com/warmcat/libwebsockets
+[submodule "--force"]
+	path = --force
+	url = https://github.com/warmcat/libwebsockets

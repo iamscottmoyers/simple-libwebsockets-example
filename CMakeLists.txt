@@ -17,8 +17,12 @@ if(UNIX)
 endif()
 
 if(WIN32)
-  include_directories("./libwebsockets/build/include")
+  include_directories("./libwebsockets/build") #libwebsockets.h
+  include_directories("./libwebsockets/lib") #lws_config.h
   include_directories("C:/OpenSSL-Win32/include")
+
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/libwebsockets/build/bin/websockets.dll
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
   target_link_libraries(server "${CMAKE_CURRENT_SOURCE_DIR}/libwebsockets/build/lib/*.lib")
   target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/libwebsockets/build/lib/*.lib")
@@ -26,7 +30,3 @@ if(WIN32)
   add_definitions(-DWINDOWS)
   message("Building for Windows")
 endif()
-
-
-
-
