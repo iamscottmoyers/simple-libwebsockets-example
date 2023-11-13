@@ -5,7 +5,7 @@
 
 static struct lws *web_socket = NULL;
 
-#define EXAMPLE_RX_BUFFER_BYTES (10)
+#define EXAMPLE_TX_BUFFER_BYTES 10
 
 static int callback_example( struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len )
 {
@@ -21,14 +21,14 @@ static int callback_example( struct lws *wsi, enum lws_callback_reasons reason, 
 
 		case LWS_CALLBACK_CLIENT_WRITEABLE:
 		{
-			unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + EXAMPLE_RX_BUFFER_BYTES + LWS_SEND_BUFFER_POST_PADDING];
+			unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + EXAMPLE_TX_BUFFER_BYTES + LWS_SEND_BUFFER_POST_PADDING];
 			unsigned char *p = &buf[LWS_SEND_BUFFER_PRE_PADDING];
 			size_t n = sprintf( (char *)p, "%u", rand() );
 			lws_write( wsi, p, n, LWS_WRITE_TEXT );
 			break;
 		}
 
-		case LWS_CALLBACK_CLOSED:
+		case LWS_CALLBACK_CLIENT_CLOSED:
 		case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
 			web_socket = NULL;
 			break;
@@ -48,13 +48,16 @@ enum protocols
 
 static struct lws_protocols protocols[] =
 {
-	{
-		"example-protocol",
-		callback_example,
-		0,
-		EXAMPLE_RX_BUFFER_BYTES,
-	},
-	{ NULL, NULL, 0, 0 } /* terminator */
+    {
+        .name                  = "example-protocol", /* Protocol name*/
+        .callback              = callback_example,   /* Protocol callback */
+        .per_session_data_size = 0,                  /* Protocol callback 'userdata' size */
+        .rx_buffer_size        = 0,                  /* Receve buffer size (0 = no restriction) */
+        .id                    = 0,                  /* Protocol Id (version) (optional) */
+        .user                  = NULL,               /* 'User data' ptr, to access in 'protocol callback */
+        .tx_packet_size        = 0                   /* Transmission buffer size restriction (0 = no restriction) */
+    },
+    LWS_PROTOCOL_LIST_TERM /* terminator */
 };
 
 int main( int argc, char *argv[] )
@@ -62,7 +65,7 @@ int main( int argc, char *argv[] )
 	struct lws_context_creation_info info;
 	memset( &info, 0, sizeof(info) );
 
-	info.port = CONTEXT_PORT_NO_LISTEN;
+	info.port = CONTEXT_PORT_NO_LISTEN; /* we do not run any server */
 	info.protocols = protocols;
 	info.gid = -1;
 	info.uid = -1;
@@ -78,7 +81,9 @@ int main( int argc, char *argv[] )
 		/* Connect if we are not connected to the server. */
 		if( !web_socket && tv.tv_sec != old )
 		{
-			struct lws_client_connect_info ccinfo = {0};
+			struct lws_client_connect_info ccinfo;
+			memset(&ccinfo, 0, sizeof(ccinfo));
+			
 			ccinfo.context = context;
 			ccinfo.address = "localhost";
 			ccinfo.port = 8000;
@@ -86,6 +91,7 @@ int main( int argc, char *argv[] )
 			ccinfo.host = lws_canonical_hostname( context );
 			ccinfo.origin = "origin";
 			ccinfo.protocol = protocols[PROTOCOL_EXAMPLE].name;
+			
 			web_socket = lws_client_connect_via_info(&ccinfo);
 		}
 
@@ -96,7 +102,7 @@ int main( int argc, char *argv[] )
 			old = tv.tv_sec;
 		}
 
-		lws_service( context, /* timeout_ms = */ 250 );
+		lws_service( context, /* timeout_ms = */ 250 ); /* NOTE: since v3.2, timeout_ms may be set to '0', since it internally ignored */
 	}
 
 	lws_context_destroy( context );
